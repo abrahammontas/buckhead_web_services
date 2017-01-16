@@ -1,0 +1,27 @@
+#header-full {
+    background-image: url('../../images/buckhead_atlanta.jpg');
+    height:100% !important;
+}
+.header-full-title {
+    background-image: none;
+}
+@media screen and (min-width: 750px) {
+    .navbar .navbar-nav {
+        display: inline-block;
+        float: none;
+    }
+    .navbar {
+        text-align: center;
+    }
+}
+.navbar-default .navbar-brand {
+    background-image:none;
+    padding: 15px;
+}
+.btn-home {
+    background-color: rgba(121, 168, 40, 0.80);
+}
+.btn-home:hover {
+    background-color: rgba(121, 168, 40, 0.90);
+    color: white;
+}
