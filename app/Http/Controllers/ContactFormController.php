@@ -51,6 +51,13 @@ class ContactFormController extends Controller
         $calendar->save();
 
         if(isset($calendar->id)) {
+            $mail = $calendar->email;
+            Mail::send('emails.contact', $array, function($message, $array) {
+                $message->to($array->email);
+                $message->bcc('jboud1217@gmail.com');
+                $message->subject('Message from website!');
+            });
+
             return response()->json(['message' => "Date reserved!", "class" => "alert alert-success"]);
         } else {
             return response()->json(['message' => "An error occurred please try again in a moment.",
