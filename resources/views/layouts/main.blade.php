@@ -27,6 +27,8 @@
 
     <link href="{{ asset('css/vendors.css') }}" rel="stylesheet">
     <link href="{{ asset('css/syntaxhighlighter/shCore.css') }}" rel="stylesheet">
+    <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+
 
     <!-- RS5.0 Stylesheet -->
     <!--<link rel="stylesheet" type="text/css" href="assets/css/settings.css">
@@ -38,6 +40,12 @@
 
     <!-- Custom CSS -->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+
+    <style>
+        .form-group .glyphicon {
+            margin-top: 0px !important;
+        }
+    </style>
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
