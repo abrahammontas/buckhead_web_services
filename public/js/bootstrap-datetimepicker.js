@@ -852,7 +852,7 @@
           }
         } else {
           txt = i + ':00';
-          indexOf;
+          html.push('<span class="' + classes.join(' ') + '">' + hours + ':' + (i < 10 ? '0' + i : i) + '</span>');
         }
       }
       this.picker.find('.datetimepicker-minutes td').html(html.join(''));
