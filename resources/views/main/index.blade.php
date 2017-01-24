@@ -60,7 +60,7 @@
                         <p class="text-center">Looking for just a content/blog website? We got you covered there as well!</p>
                     </div>
                 </div>
-                <div class="row text-center animated fadeInDown animation-delay-20" style="margin-top:60px; margin-bottom:120px">
+                <div class="row text-center animated fadeInDown animation-delay-20" style="margin-top:60px; margin-bottom:120px" data-toggle="modal" data-target="#scheduleModal">
                     <button type="submit" class="btn btn-lg btn-home"><span style="font-weight:500">Schedule Free Phone Consultation</span></button>
                 </div>
             </div>
@@ -220,6 +220,23 @@
 
                     {{ Form::open(['method' => 'post', 'route' => 'contact', 'id' => 'contact-form']) }}
 
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+
+                        @if (count($errors) > 0)
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <div class="form-group">
                             {{ Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'Full Name (required)', 'required']) }}
                         </div>
@@ -243,7 +260,6 @@
                         {{ Form::submit('Submit', ['class' => 'btn btn-primary']) }}
 
                         <div class="clearfix"></div>
-
                     {{ Form::close() }}
 
                 </div>
@@ -291,7 +307,161 @@
                     </div>
                 </div>
             </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            {{ Form::open(['id' => 'book-form']) }}
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Schedule Free Phone Consultation</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <div class="form-group">
+                                    {{ Form::email('bookEmail', '', ['id' => 'bookEmail', 'class' => 'form-control', 'placeholder' => 'Email (required)', 'required']) }}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="dtp_input2" class="col-md-4 control-label">Date Picking</label>
+                                    <div class="input-group date form_date col-md-8" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                        <input id="dateInput" class="form-control" size="16" type="text" value="" readonly>
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                    </div>
+                                    <input type="hidden" id="dtp_input2" value="" /><br/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dtp_input3" class="col-md-4 control-label">Time Picking</label>
+                                    <select id="timeSelect">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="save">Save changes</button>
+                            </div>
+                            {{ Form::close() }}
+
+                            <div id="bookMessage" class="hidden">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
         </section>
     </div>
 
+    <script type="text/javascript" src="./js/jquery-3.1.1.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/moment.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+    <script type="application/javascript">
+
+
+        $(document).ready(function(){
+            // Add smooth scrolling to all links
+            $("a").on('click', function(event) {
+
+                // Make sure this.hash has a value before overriding default behavior
+                if (this.hash !== "") {
+                    // Prevent default anchor click behavior
+                    event.preventDefault();
+
+                    // Store hash
+                    var hash = this.hash;
+
+                    // Using jQuery's animate() method to add smooth page scroll
+                    // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+                    $('html, body').animate({
+                        scrollTop: $(hash).offset().top
+                    }, 800, function(){
+
+                        // Add hash (#) to URL when done scrolling (default click behavior)
+                        window.location.hash = hash;
+                    });
+                } // End if
+            });
+
+        });
+
+        $("#save").on('click', function(e){
+            var email = $("#bookEmail").val();
+            var date = $("#dtp_input2").val();
+            var time = $("#timeSelect").val();
+
+            if(time != "" && date != "" && email != "") {
+                $.ajax({
+                            type: "POST",
+                            url: "book",
+                            data: {email: email, date: date, time: time }
+                        })
+                        .done(function (data) {
+                            $("#bookMessage").removeClass('hidden').html(data.message).addClass(data.class).delay(3000).fadeOut();
+                        });
+            } else {
+                if(email == ""){
+                    $("#bookMessage").html("You have to fill the email input!");
+                } else {
+                    $("#bookMessage").html("You have to select date and time!");
+                }
+                $("#bookMessage").removeClass('hidden').addClass("alert alert-danger").delay(3000).fadeOut();
+
+                e.preventDefault(); // prevents default
+                return false;
+            }
+        });
+
+        $("#dateInput").change(function(e){
+            var date = $("#dtp_input2").val();
+            $('#timeSelect')
+                    .find('option')
+                    .remove()
+                    .end();
+
+            $.ajax({
+                        type: "GET",
+                        url: "time/" + date
+                    })
+                    .done(function (data) {
+                        console.log(data);
+                        $.each(data, function(k, v) {
+                            $('#timeSelect').append($('<option>').text(v).attr('value', v));
+                        });
+                    });
+        });
+
+        var date = new Date();
+        date.setDate(date.getDate() + 14);
+        var day = date.getDate(),
+         month = date.getMonth()+1,
+         year = date.getFullYear(),
+         hour = date.getHours(),
+         min = date.getMinutes();
+
+
+        $('.form_date').datetimepicker({
+            startDate: year+"-"+month+"-"+day,
+            weekStart: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            forceParse: 0,
+            hoursDisabled: '[0,6]'
+        });
+        $('.form_time').datetimepicker({
+            weekStart: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 1,
+            minView: 0,
+            maxView: 1,
+            forceParse: 0,
+            minuteStep: 30,
+            hoursDisabled: '0,1,2,3,4,5,6,7,8,17,18,19,20,21,22,23',
+        });
+    </script>
 @endsection

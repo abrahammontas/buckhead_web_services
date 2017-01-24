@@ -16,3 +16,5 @@ Route::get('/', function() {
 });
 
 Route::post('/', ['as' => 'contact', 'uses' => 'ContactFormController@contactForm']);
+Route::post('book', ['as' => 'book', 'uses' => 'ContactFormController@bookDate']);
+Route::get('time/{time}', ['as' => 'time', 'uses' => 'ContactFormController@getTime']);
